@@ -64,20 +64,20 @@ class PMT_event:
     
     def __static_find_boundaries(self):
 
-        if self.event_type == 'source':
+        try:
+            peaks, n_peaks = self.pmt_peaks(0, len(self.waveform), 5)
+            tleft = peaks[0]
+            tright = peaks[-1]
+        except:
             t_peak = self.pmt_max_ampl()
             tleft = t_peak
             tright = t_peak
-        else:
-            peaks, n_peaks = self.pmt_peaks(0, len(self.waveform), 10)
-            tleft = peaks[0]
-            tright = peaks[-1]
 
         mean, std, _ = self.background()
         
-        eps=0.001
+        eps=0.1
         
-        tmin, tmax = 0, len(self.waveform)
+        tmin, tmax = 0, len(self.waveform)-1
         
             
             
@@ -150,9 +150,9 @@ class PMT_event:
         
         axi.get_xaxis().set_visible(False)
         axi.get_yaxis().set_visible(True)
-        axi.set_title('Statistical noise')
+        axi.set_title('Statistical noise', fontsize=20)
         
-        axi.text(0.95, 0.95, f'$\sigma$={std:.2f} mV', transform=axi.transAxes, fontsize=10,
+        axi.text(0.9, 0.8, f'$\sigma$={std:.2f} mV', transform=axi.transAxes, fontsize=20,
             verticalalignment='top', horizontalalignment='right', color='black',
             bbox=dict(boxstyle='round', facecolor='white', edgecolor='gray', pad=0.5))
 
@@ -193,7 +193,7 @@ class PMT_event:
     
             
         #determino la posizione del picco più grande
-        #t_peak = self.pmt_max_ampl()
+        amplitude = np.abs(np.min(self.waveform))
     
     
         #determino info sul fondo
@@ -202,9 +202,25 @@ class PMT_event:
         #determino l'intervallo di integrazione
         l, r = self.__static_find_boundaries()
         
+        
         #determino il numero di picchi nell'intervallo
-        peaks, npeaks = self.pmt_peaks(l, r, 20)
+        peaks, npeaks = self.pmt_peaks(l, r, 10)
         #print("#############", peaks+l, t_peak )
+        
+        
+        
+          
+        #determino gli array di fondo (necessari per la visualizzazione dell'area)
+        fondo = np.array([mean]*sample_points)
+        
+        intervallo = (t >= t[l]) & (t <= t[r])
+        area = np.trapz(np.array(self.waveform)[intervallo]-mean, t[intervallo])
+        integrale = (abs(area)*1e12)/(1000*50) #50 Ohm impedenza
+        
+        intervallo_noise = (t < t[l]) | (t > t[r])
+        area_noise = np.trapz(np.array(self.waveform)[intervallo_noise]-mean, t[intervallo_noise])
+        integrale_noise = (abs(area_noise)*1e12)/(1000*50) #50 Ohm impedenza
+        
    
         
         if fit:
@@ -224,9 +240,6 @@ class PMT_event:
                 std_fit = np.sqrt(np.diag(pcov))
                 FWHM, half, points = fwhm(t[xmin_fit:xmax_fit], signal_model(t[xmin_fit:xmax_fit], *popt))
                 
-                # if b>10:
-                #     print("Fit non convergente!")
-                #     fit = False
                 
                 for p, std in zip(popt, std_fit):
                     if std > abs(p) * 100:  
@@ -241,18 +254,6 @@ class PMT_event:
             
                             
     
-          
-        #determino gli array di fondo (necessari per la visualizzazione dell'area)
-        fondo = np.array([mean]*sample_points)
-        
-        intervallo = (t >= t[l]) & (t <= t[r])
-        area = np.trapz(np.array(self.waveform)[intervallo]-mean, t[intervallo])
-        integrale = (abs(area)*1e12)/(1000*50) #50 Ohm impedenza
-        
-        intervallo_noise = (t < t[l]) | (t > t[r])
-        area_noise = np.trapz(np.array(self.waveform)[intervallo_noise]-mean, t[intervallo_noise])
-        integrale_noise = (abs(area_noise)*1e12)/(1000*50) #50 Ohm impedenza
-        
         
         if verbose:
           
@@ -304,13 +305,13 @@ class PMT_event:
             axi.set_title(f"{self.PMT.name} - event: {self.serial_number} - threshold: {self.threshold}mV", fontsize=20)
             axi.plot(t, self.waveform-mean, marker='o', label='Raw signal', alpha=0.5)
     
-            axi.plot(t[peaks+l], np.array(self.waveform)[peaks+l]-mean, 'x', markersize = 20, color='orange', linewidth=20, label=f'{npeaks} peaks above threshold of {self.threshold}mV')
+            axi.plot(t[peaks+l], np.array(self.waveform)[peaks+l]-mean, 'x', markersize = 20, color='orange', linewidth=20, label=f'{npeaks} peaks above {self.threshold}mV')
     
             #linee rosse
             axi.axvline(x=t[l], color='red', linestyle='--') 
             axi.axvline(x=t[r], color='red', linestyle='--')   
             
-            axi.fill_between(t, fondo-mean, self.waveform-mean, where=intervallo, color='grey', alpha=0.2, label=f'Charge released: {integrale:.2f} $pC$')
+            axi.fill_between(t, fondo-mean, self.waveform-mean, where=intervallo, color='grey', alpha=0.2, label=f'Charge: {integrale:.2f} $pC$')
             
             
             if fit:
@@ -323,17 +324,21 @@ class PMT_event:
                     
             axi.set_xlim(xmin,xmax)
             axi.grid(True, linestyle='--', linewidth=0.5)
-            axi.set_ylabel('Signal Value [mV]', fontsize=14)
-            axi.set_xlabel('Time (s)', fontsize=14)
-            axi.legend(fontsize='large')
+            axi.set_ylabel('Signal Value [mV]', fontsize=20)
+            axi.set_xlabel('Time (s)', fontsize=20)
+            axi.legend(fontsize=15, loc='lower right')
         
-        if self.event_type == 'source':
-            if npeaks == 1:
-                return [integrale, integrale/(t[r]-t[l]), t[r]-t[l], integrale_noise]
-            else:
-                return [-1, -1, t[r]-t[l]]
-        else:
-            return [integrale, integrale/(t[r]-t[l]), t[r]-t[l], integrale_noise]
+        
+        return [integrale, integrale/(t[r]-t[l]), t[r]-t[l], integrale_noise, l, r, peaks+l, npeaks, amplitude]
+        
+        
+        # if self.event_type == 'source':
+        #     if npeaks == 1:
+        #         return [integrale, integrale/(t[r]-t[l]), t[r]-t[l], integrale_noise]
+        #     else:
+        #         return [-1, -1, t[r]-t[l], integrale_noise]
+        # else:
+        #     return [integrale, integrale/(t[r]-t[l]), t[r]-t[l], integrale_noise]
         
         
 def signal_model(t, a, b, c, taus):
