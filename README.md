@@ -1,6 +1,9 @@
 # CYGNO-PMT-analysis
 Benvenuto! 
-Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata "pmt_analysis_library.py" ed una più ad alto livello "pmt_analysis_HL.py". Per visualizzare le waveforms bisogna fare uso della funzione "single_waveform_info" definita in "pmt_analysis_HL.py". 
+Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata "pmt_analysis_library.py" ed una più ad alto livello "pmt_analysis_HL.py". 
+
+## VISUALIZZAZIONE WAVERRFORMS
+Per visualizzare le waveforms bisogna fare uso della funzione "single_waveform_info" definita in "pmt_analysis_HL.py". 
 Un esempio del suo utilizzo è stato inserito in "esempio.py". Tuttavia, in seguito metto una breve guida all'utilizzo.
 ```
 pmt_analysis_HL.single_waveform_info(mfile, corrected, channels_offsets, PMTs, n, digitizer_type, event_type, signal_fit=False, resampling=False, verbose=False)
