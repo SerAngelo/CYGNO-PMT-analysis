@@ -1,6 +1,6 @@
 # CYGNO-PMT-analysis
 Benvenuto! 
-Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata "pmt_analysis_library.py" ed una più ad alto livello "pmt_analysis_HL.py". 
+Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata "pmt_analysis_library.py" ed una più ad alto livello "pmt_analysis_library_HL.py". 
 
 ## VISUALIZZAZIONE WAVEFORMS
 Per visualizzare le waveforms bisogna fare uso della funzione "single_waveform_info" definita in "pmt_analysis_HL.py". 
