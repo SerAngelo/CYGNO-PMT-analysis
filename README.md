@@ -15,6 +15,7 @@ PARAMETRI:
 - signal_fit: esegue il fit e lo fa visualizzare
 - resampling: attiva il resampling
 - verbose: stampa varie informazioni
+
 RETURN:
 -Restituisce [c1,c2] dove c_i = [carica, carica/width, width, carica_rumore, estremo_sinistro , estremo_destro, posizione_picchi, numero_picchi, ampiezza]
 
