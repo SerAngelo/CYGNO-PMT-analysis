@@ -1,6 +1,7 @@
 # CYGNO-analysis
 Benvenuto! 
-Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata "pmt_analysis_library.py" ed una più ad alto livello "pmt_analysis_HL.py". Per visualizzare le waveform bisogna fare uso della funzione "single_waveform_info" definita in "pmt_analysis_HL.py". In seguito metto una breve guida all'utilizzo:
+Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata "pmt_analysis_library.py" ed una più ad alto livello "pmt_analysis_HL.py". Per visualizzare le waveform bisogna fare uso della funzione "single_waveform_info" definita in "pmt_analysis_HL.py". 
+Un esempio del suo utilizzo è stato inserito in "esempio.py". Tuttavia, in seguito metto una breve guida all'utilizzo.
 
 ## single_waveform_info(mfile, corrected, channels_offsets, PMTs, n, digitizer_type, event_type, signal_fit=False, resampling=False, verbose=False)
 - mfile: è l'oggetto generato attraverso la libreria cygno
@@ -11,4 +12,5 @@ Tutta l'analisi fa riferimento a due librerie, una più a basso livello chiamata
 - event_type: nome con cui chiamare l'immagine (che verrà automaticamente salvata)
 - signal_fit: esegue il fit e lo fa visualizzare
 - resampling: attiva il resampling
-- verbose: stampa varie informazioni 
+- verbose: stampa varie informazioni
+
