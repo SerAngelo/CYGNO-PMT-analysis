@@ -17,6 +17,6 @@ PARAMETRI:
 - verbose: stampa varie informazioni
 
 RETURN:
--Restituisce [c1,c2] dove c_i = [carica_i, carica_i/width_i, width_i, carica_rumore_i, estremo_sinistro_i, estremo_destro_i, posizione_picchi_i, numero_picchi_i, ampiezza_i]
+-Restituisce '''[c1,c2]''' dove '''c_i = [carica_i, carica_i/width_i, width_i, carica_rumore_i, estremo_sinistro_i, estremo_destro_i, posizione_picchi_i, numero_picchi_i, ampiezza_i]'''
 
 
